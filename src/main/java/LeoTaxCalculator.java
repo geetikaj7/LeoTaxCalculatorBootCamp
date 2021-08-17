@@ -18,11 +18,11 @@ public class LeoTaxCalculator {
         return false;
     }
 
-    public Double calculateCost(double tax) throws ParseException {
+    public double calculateCost(double tax) throws ParseException {
         return getValue(cost + calculateTax(tax));
     }
 
-    private Double getValue(double cost) throws ParseException {
+    private double getValue(double cost) throws ParseException {
         DecimalFormat df = new DecimalFormat("0.00");
         String format = df.format(cost);
         return df.parse(format).doubleValue();
