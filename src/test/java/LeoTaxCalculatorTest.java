@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
+import java.util.stream.Stream;
 
 public class LeoTaxCalculatorTest {
 
@@ -29,25 +30,27 @@ public class LeoTaxCalculatorTest {
     @Test
     public void calculateTotalBill() throws ParseException {
         double costWithImportedTaxP1 = getCostWithTaxOnEachProduct(getCostWithBasicTax(270.99, "perfume"), true);
-        double totalTaxP1 = getTaxOnEachProduct(270.99, costWithImportedTaxP1, true);
+        double totalTaxP1 = getTaxOnEachProduct(270.99, costWithImportedTaxP1, true, "perfume");
 
         double costWithImportedTaxP2 = getCostWithTaxOnEachProduct(getCostWithBasicTax(180.99, "perfume"), false);
-        double totalTaxP2 = getTaxOnEachProduct(180.99, costWithImportedTaxP2, false);
+        double totalTaxP2 = getTaxOnEachProduct(180.99, costWithImportedTaxP2, false, "perfume");
 
         double costWithImportedTaxP3 = getCostWithTaxOnEachProduct(getCostWithBasicTax(19.75, ExemptedProduct.MEDICAL.name()), false);
-        double totalTaxP3 = getTaxOnEachProduct(19.75, costWithImportedTaxP3, false);
+        double totalTaxP3 = getTaxOnEachProduct(19.75, costWithImportedTaxP3, false, ExemptedProduct.MEDICAL.name());
 
         double costWithImportedTaxP4 = getCostWithTaxOnEachProduct(getCostWithBasicTax(210.25, ExemptedProduct.FOOD.name()), true);
-        double totalTaxP4 = getTaxOnEachProduct(210.25, costWithImportedTaxP4, true);
+        double totalTaxP4 = getTaxOnEachProduct(210.25, costWithImportedTaxP4, true, ExemptedProduct.FOOD.name());
 
         Assertions.assertEquals(752.59, costWithImportedTaxP1 + costWithImportedTaxP2 + costWithImportedTaxP3 + costWithImportedTaxP4);
-        Assertions.assertEquals(94.89, totalTaxP1 + totalTaxP2 + totalTaxP3 + totalTaxP4);
-
+        Assertions.assertEquals(71.89, totalTaxP1 + totalTaxP2 + totalTaxP3 + totalTaxP4);
     }
 
-    private double getTaxOnEachProduct(double costWithBasicTax, double costWithImportedTax, boolean isImported) throws ParseException {
+    private double getTaxOnEachProduct(double costWithBasicTax, double costWithImportedTax, boolean isImported, String productType) throws ParseException {
         double importedTax = 0;
-        double basicTax = getTax(BASIC_TAX, costWithBasicTax);
+        double basicTax = 0;
+        if (!Stream.of(ExemptedProduct.values()).anyMatch(v -> v.name().equals(productType))) {
+            basicTax = getTax(BASIC_TAX, costWithBasicTax);
+        }
         if (isImported) {
             importedTax = getTax(IMPORTED_TAX, costWithImportedTax);
         }
@@ -55,8 +58,7 @@ public class LeoTaxCalculatorTest {
         return basicTax + importedTax;
     }
 
-    private double getCostWithTaxOnEachProduct(double perfume, boolean isImported) throws ParseException {
-        double costWithBasicTax = perfume;
+    private double getCostWithTaxOnEachProduct(double costWithBasicTax, boolean isImported) throws ParseException {
         return getCostWithImportedTax(costWithBasicTax, isImported);
     }
 

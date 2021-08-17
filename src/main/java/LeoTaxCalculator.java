@@ -19,17 +19,17 @@ public class LeoTaxCalculator {
     }
 
     public Double calculateCost(double tax) throws ParseException {
-        return getValue(tax, cost + calculateTax(tax));
+        return getValue(cost + calculateTax(tax));
     }
 
-    private Double getValue(double tax, double cost) throws ParseException {
+    private Double getValue(double cost) throws ParseException {
         DecimalFormat df = new DecimalFormat("0.00");
         String format = df.format(cost);
         return df.parse(format).doubleValue();
     }
 
     public double calculateTax(double tax) throws ParseException {
-        return getValue(tax, cost * tax / 100);
+        return getValue(cost * tax / 100);
     }
 
 }
